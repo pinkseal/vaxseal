@@ -1005,7 +1005,11 @@ function HomeScreen({ basic, done, dontKnow, notDone, doneDynamic, setDoneDynami
       <div className="bg-white border-b border-slate-100 px-5 pt-6 pb-4 flex-shrink-0">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2"><span className="text-xl">💉</span><span className="font-bold text-slate-900">VaxPack</span></div>
-          <span className="text-xs text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">📍 {basic.city}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">📍 {basic.city}</span>
+            <button onClick={() => setShowAdd(true)} title="Добавить прививку"
+              className="w-7 h-7 rounded-full bg-teal-600 text-white text-base font-bold flex items-center justify-center hover:bg-teal-700 transition-all leading-none">＋</button>
+          </div>
         </div>
         <div className="bg-gradient-to-r from-teal-600 to-teal-500 rounded-2xl p-3.5 text-white">
           <div className="text-xs opacity-80 mb-1.5">Твоя картина здоровья:</div>
@@ -1034,14 +1038,6 @@ function HomeScreen({ basic, done, dontKnow, notDone, doneDynamic, setDoneDynami
       </div>
       <div className="flex-1 overflow-auto p-4 flex flex-col gap-3">
         {activeTab === "vaccines" && (<>
-          <div className="flex gap-2">
-            <button onClick={() => setShowAdd(true)} className="flex-1 flex items-center justify-center gap-1.5 bg-teal-50 border border-teal-200 text-teal-700 font-semibold py-3 rounded-2xl text-sm hover:bg-teal-100 transition-all">
-              ＋ Добавить прививку
-            </button>
-            <button onClick={onRetake} className="flex-1 flex items-center justify-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-600 font-semibold py-3 rounded-2xl text-sm hover:bg-slate-100 transition-all">
-              🔄 Обновить данные
-            </button>
-          </div>
           <button onClick={() => setShowAddPlan(true)} className="w-full flex items-center justify-center gap-1.5 bg-violet-50 border border-violet-200 text-violet-700 font-semibold py-3 rounded-2xl text-sm hover:bg-violet-100 transition-all">
             📅 Планирую пойти
           </button>
@@ -1227,7 +1223,7 @@ function DonationScreen({ basic }) {
 
 // ─── SCREEN: PROFILE ─────────────────────────────────────────────────────────
 
-function ProfileScreen({ basic, onChange, done, dontKnow, notDone, doneDynamic, onOpenRecords, onFullReset }) {
+function ProfileScreen({ basic, onChange, done, dontKnow, notDone, doneDynamic, onOpenRecords, onFullReset, onRetake }) {
   const age = Number(basic.age);
   const recs = getRecommendations(age, basic.gender, basic.origin, done, dontKnow, notDone);
   const needed = recs.filter(r => r.status === "needed" && !doneDynamic.includes(r.id));
@@ -1268,6 +1264,16 @@ function ProfileScreen({ basic, onChange, done, dontKnow, notDone, doneDynamic, 
           <div className="flex-1">
             <div className="text-sm font-semibold text-slate-900">Мои вакцинации и донорство</div>
             <div className="text-xs text-slate-500 mt-0.5">История прививок с датами и местами, записи о сдаче крови</div>
+          </div>
+          <span className="text-slate-300 text-lg">›</span>
+        </button>
+
+        <button onClick={onRetake}
+          className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-3 hover:border-teal-300 hover:bg-teal-50 transition-all text-left">
+          <div className="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-xl flex-shrink-0">🔄</div>
+          <div className="flex-1">
+            <div className="text-sm font-semibold text-slate-900">Обновить данные</div>
+            <div className="text-xs text-slate-500 mt-0.5">Пройти квиз заново — новые ответы дополнят историю, не сотрут</div>
           </div>
           <span className="text-slate-300 text-lg">›</span>
         </button>
@@ -1649,7 +1655,7 @@ export default function App() {
         {mainTab === "home"     && <HomeScreen     basic={basic} done={done} dontKnow={dontKnow} notDone={notDone} doneDynamic={doneDynamic} setDoneDynamic={setDoneDynamic} onAddVaccine={addVaccine} onRetake={() => startQuiz(true)} onMarkDone={markDone} onUnmarkDone={unmarkDone} plans={plans} onAddPlan={addPlan} onDeletePlan={deletePlan} onCompletePlan={completePlan} />}
         {mainTab === "city"     && <CityScreen     basic={basic} />}
         {mainTab === "donation" && <DonationScreen basic={basic} />}
-        {mainTab === "profile"  && <ProfileScreen  basic={basic} onChange={setBasic} done={done} dontKnow={dontKnow} notDone={notDone} doneDynamic={doneDynamic} onOpenRecords={() => setShowRecords(true)} onFullReset={fullReset} />}
+        {mainTab === "profile"  && <ProfileScreen  basic={basic} onChange={setBasic} done={done} dontKnow={dontKnow} notDone={notDone} doneDynamic={doneDynamic} onOpenRecords={() => setShowRecords(true)} onFullReset={fullReset} onRetake={() => startQuiz(true)} />}
         <div className="bg-white border-t border-slate-200 flex px-1 pb-2 pt-1 flex-shrink-0">
           {[
             { id:"home",     label:"Вакцинация", icon:"💉" },
