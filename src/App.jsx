@@ -1361,6 +1361,7 @@ function RecordsScreen({ vaxRecords, donationRecords, onBack, onAddDonation, onS
   const [showAddDon, setShowAddDon] = useState(false);
   const [donDate, setDonDate] = useState("");
   const [donCenter, setDonCenter] = useState("");
+  const [editingDate, setEditingDate] = useState(null);
   const fmt = d => d ? new Date(d).toLocaleDateString("ru", { day:"numeric", month:"long", year:"numeric" }) : "дата не указана";
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
@@ -1386,15 +1387,21 @@ function RecordsScreen({ vaxRecords, donationRecords, onBack, onAddDonation, onS
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <div className="text-sm font-semibold text-slate-900">{r.label}</div>
-                        {r.auto && <span className="text-xs bg-teal-50 text-teal-600 px-1.5 py-0.5 rounded-full font-medium">отмечено в приложении</span>}
+                        {r.auto && <span className="text-xs bg-teal-50 text-teal-600 px-1.5 py-0.5 rounded-full font-medium">отмечено в опросе</span>}
                       </div>
-                      {r.date
-                        ? <div className="text-xs text-slate-500 mt-0.5">🗓 {fmt(r.date)}</div>
-                        : <div className="mt-1.5 flex items-center gap-2">
-                            <span className="text-xs text-slate-400">🗓 дата не указана</span>
-                            <input type="date" onChange={e => onSetDate(r.id, e.target.value)}
-                              className="text-xs border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-teal-400" />
-                          </div>}
+                      {editingDate === r.id ? (
+                        <div className="mt-1.5 flex items-center gap-2">
+                          <input type="date" defaultValue={r.date || ""} autoFocus
+                            onChange={e => { onSetDate(r.id, e.target.value); }}
+                            className="text-xs border border-teal-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-teal-400" />
+                          <button onClick={() => setEditingDate(null)} className="text-xs text-teal-600 font-semibold hover:underline">Готово</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setEditingDate(r.id)} className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500 hover:text-teal-600 transition-colors group">
+                          🗓 {fmt(r.date)}
+                          <span className="text-slate-300 group-hover:text-teal-500">✏️</span>
+                        </button>
+                      )}
                       {r.clinic && <div className="text-xs text-slate-500 mt-0.5">📍 {r.clinic}</div>}
                     </div>
                   </div>
@@ -1540,12 +1547,10 @@ export default function App() {
   };
 
   const finishQuiz = () => {
-    // MERGE: union done, and reconcile dontKnow/notDone (done wins)
-    const mergedDone = Array.from(new Set([...done, ...quizDone]));
-    const mergedDk   = Array.from(new Set([...dontKnow, ...quizDk])).filter(id => !mergedDone.includes(id));
-    const mergedNot  = Array.from(new Set([...notDone, ...quizNot])).filter(id => !mergedDone.includes(id) && !mergedDk.includes(id));
-    setDone(mergedDone); setDontKnow(mergedDk); setNotDone(mergedNot);
-    syncRecordsFromDone(mergedDone);
+    // Retake: quiz was PRE-FILLED with current answers, so its state is the full truth.
+    // Nothing gets lost (old answers were the starting point), corrections apply.
+    setDone([...quizDone]); setDontKnow([...quizDk]); setNotDone([...quizNot]);
+    syncRecordsFromDone(quizDone);
     setScreen("result"); setMainTab("home"); setIsRetake(false);
   };
 
