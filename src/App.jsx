@@ -351,6 +351,14 @@ const EMERGENCY_CASES = [
 
 const CITY_NEWS = {
   "Нови Сад": [
+    { id:100, icon:"⚠️", title:"Вспышка коклюша в Сербии", tag:"Вспышка", tagColor:"bg-red-100 text-red-600",
+      text:"Институт јавног здравља фиксирует рост случаев коклюша (велики кашаљ) по стране. Врачи напоминают: взрослым нужна ревакцинация Tdap каждые 10 лет — детская прививка не защищает пожизненно.",
+      date:"актуально", place:"вся Сербия",
+      link:"https://www.batut.org.rs", linkLabel:"Комментарии врачей (Институт Батут)" },
+    { id:101, icon:"⚠️", title:"Случаи кори в регионе", tag:"Вспышка", tagColor:"bg-red-100 text-red-600",
+      text:"В Сербии и соседних странах периодически регистрируются вспышки кори из-за снижения охвата вакцинацией. Проверь, что у тебя 2 дозы КПК — одной дозы из детства может быть недостаточно.",
+      date:"актуально", place:"Сербия и Балканы",
+      link:"https://www.who.int/europe/news-room", linkLabel:"Комментарии врачей (ВОЗ Европа)" },
     { id:1, icon:"🚐", title:"Мобильная донорская машина", tag:"Донорство", tagColor:"bg-red-100 text-red-600",
       text:"Выездная станция Завода за трансфузију примет доноров на Тргу слободе. Возьми личную карту, приходи натощак нельзя — лёгкий завтрак обязателен.",
       date:"Сб, 28 июня, 9:00–14:00", place:"Трг слободе", mapsQuery:"Trg slobode Novi Sad" },
@@ -365,6 +373,14 @@ const CITY_NEWS = {
       date:"14–20 июля", place:"Институт за јавно здравље Војводине", mapsQuery:"Institut za javno zdravlje Vojvodine" },
   ],
   "Белград": [
+    { id:102, icon:"⚠️", title:"Вспышка коклюша в Сербии", tag:"Вспышка", tagColor:"bg-red-100 text-red-600",
+      text:"Институт јавног здравља фиксирует рост случаев коклюша (велики кашаљ) по стране. Врачи напоминают: взрослым нужна ревакцинация Tdap каждые 10 лет.",
+      date:"актуально", place:"вся Сербия",
+      link:"https://www.batut.org.rs", linkLabel:"Комментарии врачей (Институт Батут)" },
+    { id:103, icon:"⚠️", title:"Случаи кори в регионе", tag:"Вспышка", tagColor:"bg-red-100 text-red-600",
+      text:"В Сербии и соседних странах периодически регистрируются вспышки кори. Проверь, что у тебя 2 дозы КПК — одной дозы из детства может быть недостаточно.",
+      date:"актуально", place:"Сербия и Балканы",
+      link:"https://www.who.int/europe/news-room", linkLabel:"Комментарии врачей (ВОЗ Европа)" },
     { id:5, icon:"🚐", title:"Мобильная донорская машина", tag:"Донорство", tagColor:"bg-red-100 text-red-600",
       text:"Выездная станция Института за трансфузију крви будет работать у Храма Светог Саве. Доноры получают бесплатный чекап крови.",
       date:"Сб, 28 июня, 9:00–15:00", place:"Храм Светог Саве", mapsQuery:"Hram Svetog Save Beograd" },
@@ -401,8 +417,8 @@ function getRecommendations(age, gender, origin, done, dontKnow, notDone = []) {
 
   VACCINES.filter(v => !(v.id === "hpv" && age > 45)).forEach(v => {
     if (v.id === "bcg")       recs.push({ ...v, status: st("bcg"), why: "Обязательна в Сербии. Большинство из СНГ имеют защиту — стоит проверить антитела (тест Манту).", interval: "Однократно в детстве", cost: "Бесплатно" });
-    if (v.id === "dtp")       recs.push({ ...v, status: done.includes("dtp") && age <= 28 ? "ok" : done.includes("dtp") ? "check" : st("dtp","needed"), why: "Ревакцинация каждые 10 лет. Самая часто пропускаемая прививка у взрослых.", interval: "Каждые 10 лет", cost: "~800–1200 дин." });
-    if (v.id === "mmr")       recs.push({ ...v, status: st("mmr"), why: "В Сербии бывают вспышки кори. Нужно 2 дозы — если не уверен, лучше сдать антитела.", interval: "2 дозы (если не было)", cost: "Бесплатно по страховке" });
+    if (v.id === "dtp")       recs.push({ ...v, status: done.includes("dtp") && age <= 28 ? "ok" : done.includes("dtp") ? "booster" : st("dtp","needed"), why: done.includes("dtp") && age > 28 ? "Взрослым нужна ревакцинация Td/Tdap каждые 10 лет. Если последняя доза была в школе — срок давно вышел." : "Ревакцинация каждые 10 лет. Самая часто пропускаемая прививка у взрослых.", interval: "Каждые 10 лет", cost: "~800–1200 дин." });
+    if (v.id === "mmr")       recs.push({ ...v, status: done.includes("mmr") && age > 35 ? "booster" : st("mmr"), why: done.includes("mmr") && age > 35 ? "В СНГ вторая доза КПК введена в конце 90-х. Если прививался в раннем детстве — могла быть только одна доза. Рекомендация для взрослых: вторая доза или анализ на антитела IgG к кори." : "В Сербии бывают вспышки кори. Нужно 2 дозы — если не уверен, лучше сдать антитела.", interval: "2 дозы (если не было)", cost: "Бесплатно по страховке" });
     if (v.id === "hepb")      recs.push({ ...v, status: st("hepb"), why: hepbWhy, interval: "3 дозы: 0–1–6 мес", cost: "Бесплатно по LBO" });
     if (v.id === "polio")     recs.push({ ...v, status: st("polio","ok"), why: "Большинство из СНГ привиты в детстве.", interval: "Полный курс однократно", cost: "Бесплатно" });
     if (v.id === "varicella") recs.push({ ...v, status: st("varicella","ok"), why: "Если болел в детстве — иммунитет на всю жизнь. Если нет — 2 дозы.", interval: "2 дозы (если не болел)", cost: "~1500–2000 дин." });
@@ -417,6 +433,7 @@ function getRecommendations(age, gender, origin, done, dontKnow, notDone = []) {
 
 const STATUS_CFG = {
   needed: { bg: "bg-red-50",    border: "border-red-200",    badge: "bg-red-100 text-red-700",        label: "Нужно сделать" },
+  booster:{ bg: "bg-sky-50",    border: "border-sky-200",    badge: "bg-sky-100 text-sky-700",        label: "Пора обновить" },
   check:  { bg: "bg-amber-50",  border: "border-amber-200",  badge: "bg-amber-100 text-amber-700",    label: "Проверить антитела" },
   ok:     { bg: "bg-emerald-50",border: "border-emerald-200",badge: "bg-emerald-100 text-emerald-700",label: "Скорее всего ок" },
 };
@@ -732,7 +749,7 @@ function AddPlanModal({ onClose, onAdd }) {
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
       <div className="relative bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-start justify-between mb-4">
-          <div className="text-lg font-bold text-slate-900">Планирую пойти</div>
+          <div className="text-lg font-bold text-slate-900">Запланировать вакцинацию</div>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">✕</button>
         </div>
         <div className="flex flex-col gap-3">
@@ -989,6 +1006,7 @@ function HomeScreen({ basic, done, dontKnow, notDone, doneDynamic, setDoneDynami
   const checkups = getCheckups(age, basic.gender, basic.city, basic.chronic);
   const citySearchItems = CITY_SEARCH[basic.city] || [];
   const needed = recs.filter(r => r.status === "needed" && !doneDynamic.includes(r.id));
+  const booster = recs.filter(r => r.status === "booster" && !doneDynamic.includes(r.id));
   const check  = recs.filter(r => r.status === "check"  && !doneDynamic.includes(r.id));
   const doneVax = recs.filter(r => doneDynamic.includes(r.id));
   const okCount = recs.filter(r => r.status === "ok").length;
@@ -1005,18 +1023,17 @@ function HomeScreen({ basic, done, dontKnow, notDone, doneDynamic, setDoneDynami
       <div className="bg-white border-b border-slate-100 px-5 pt-6 pb-4 flex-shrink-0">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2"><span className="text-xl">💉</span><span className="font-bold text-slate-900">VaxPack</span></div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">📍 {basic.city}</span>
-            <button onClick={() => setShowAdd(true)} title="Добавить прививку"
-              className="w-7 h-7 rounded-full bg-teal-600 text-white text-base font-bold flex items-center justify-center hover:bg-teal-700 transition-all leading-none">＋</button>
-          </div>
+          <span className="text-xs text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">📍 {basic.city}</span>
         </div>
-        <div className="bg-gradient-to-r from-teal-600 to-teal-500 rounded-2xl p-3.5 text-white">
+        <div className="bg-gradient-to-r from-teal-600 to-teal-500 rounded-2xl p-3.5 text-white relative">
+          <button onClick={() => setShowAdd(true)} title="Добавить прививку"
+            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white text-lg font-bold flex items-center justify-center transition-all leading-none">＋</button>
           <div className="text-xs opacity-80 mb-1.5">Твоя картина здоровья:</div>
-          <div className="flex gap-4">
-            <div><div className="text-xl font-bold">{needed.length}</div><div className="text-xs opacity-75">прививок нужно</div></div>
-            <div><div className="text-xl font-bold">{check.length}</div><div className="text-xs opacity-75">проверить</div></div>
-            <div><div className="text-xl font-bold">{okCount + doneDynamic.length}</div><div className="text-xs opacity-75">прививок ок</div></div>
+          <div className="flex gap-3.5">
+            <div><div className="text-lg font-bold">{needed.length}</div><div className="text-xs opacity-75">нужно</div></div>
+            <div><div className="text-lg font-bold">{booster.length}</div><div className="text-xs opacity-75">обновить</div></div>
+            <div><div className="text-lg font-bold">{check.length}</div><div className="text-xs opacity-75">проверить</div></div>
+            <div><div className="text-lg font-bold">{okCount + doneDynamic.length}</div><div className="text-xs opacity-75">ок</div></div>
           </div>
         </div>
       </div>
@@ -1039,16 +1056,17 @@ function HomeScreen({ basic, done, dontKnow, notDone, doneDynamic, setDoneDynami
       <div className="flex-1 overflow-auto p-4 flex flex-col gap-3">
         {activeTab === "vaccines" && (<>
           <button onClick={() => setShowAddPlan(true)} className="w-full flex items-center justify-center gap-1.5 bg-violet-50 border border-violet-200 text-violet-700 font-semibold py-3 rounded-2xl text-sm hover:bg-violet-100 transition-all">
-            📅 Планирую пойти
+            📅 Запланировать вакцинацию
           </button>
           {plans.length > 0 && (<>
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">📅 Мои планы</div>
             {plans.map(p => <PlanCard key={p.id} plan={p} onComplete={onCompletePlan} onDelete={onDeletePlan} />)}
           </>)}
           {needed.length>0 && <><div className="text-xs font-bold text-slate-400 uppercase tracking-wider">🔴 Нужно сделать</div>{needed.map(r=><VaccineCard key={r.id} rec={r} done={doneDynamic} onToggleDone={toggleDone}/>)}</>}
+          {booster.length>0 && <><div className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-2">🔄 Пора обновить</div>{booster.map(r=><VaccineCard key={r.id} rec={r} done={doneDynamic} onToggleDone={toggleDone}/>)}</>}
           {check.length>0  && <><div className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-2">🟡 Проверить антитела</div>{check.map(r=><VaccineCard key={r.id} rec={r} done={doneDynamic} onToggleDone={toggleDone}/>)}</>}
           {doneVax.length>0 && <><div className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-2">✅ Сделано</div>{doneVax.map(r=><VaccineCard key={r.id} rec={r} done={doneDynamic} onToggleDone={toggleDone}/>)}</>}
-          {needed.length===0 && check.length===0 && <div className="text-center py-10"><div className="text-5xl mb-3">🎉</div><div className="font-bold text-slate-900 mb-1">С прививками всё отлично!</div><div className="text-sm text-slate-500">Можешь добавить свои прививки кнопкой выше.</div></div>}
+          {needed.length===0 && check.length===0 && booster.length===0 && <div className="text-center py-10"><div className="text-5xl mb-3">🎉</div><div className="font-bold text-slate-900 mb-1">С прививками всё отлично!</div><div className="text-sm text-slate-500">Можешь добавить свои прививки кнопкой ＋ выше.</div></div>}
         </>)}
         {activeTab === "clinics" && (<>
           <button onClick={() => setShowPhrases(true)} className="w-full flex items-center gap-3 bg-teal-50 border border-teal-200 text-teal-700 font-semibold py-3.5 px-4 rounded-2xl text-sm hover:bg-teal-100 transition-all">
@@ -1148,6 +1166,10 @@ function CityScreen({ basic }) {
                     {n.date && <span>🗓 {n.date}</span>}
                     {n.place && <span>📍 {n.place}</span>}
                   </div>
+                  {n.link && (
+                    <a href={n.link} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-red-600 font-medium hover:underline mt-1.5 mr-3">💬 {n.linkLabel || "Комментарии врачей"}</a>
+                  )}
                   {n.mapsQuery && (
                     <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(n.mapsQuery)}`} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-xs text-teal-600 font-medium hover:underline mt-1.5">🗺 Открыть на карте</a>
@@ -1391,7 +1413,7 @@ function RecordsScreen({ vaxRecords, donationRecords, onBack, onAddDonation, onS
                       </div>
                       {editingDate === r.id ? (
                         <div className="mt-1.5 flex items-center gap-2">
-                          <input type="date" defaultValue={r.date || ""} autoFocus
+                          <input type="date" value={r.date || ""} autoFocus
                             onChange={e => { onSetDate(r.id, e.target.value); }}
                             className="text-xs border border-teal-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-teal-400" />
                           <button onClick={() => setEditingDate(null)} className="text-xs text-teal-600 font-semibold hover:underline">Готово</button>
