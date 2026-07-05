@@ -1672,13 +1672,13 @@ export default function App() {
   if (screen === "result") {
     if (showRecords) {
       return (
-        <div className="flex flex-col h-screen max-w-sm mx-auto bg-slate-50 overflow-hidden">
+        <div className="flex flex-col h-screen max-w-sm mx-auto bg-slate-50 overflow-hidden" style={{ height: "100dvh" }}>
           <RecordsScreen vaxRecords={vaxRecords} donationRecords={donationRecords} onAddDonation={addDonation} onSetDate={setRecordDate} onBack={() => setShowRecords(false)} />
         </div>
       );
     }
     return (
-      <div className="flex flex-col h-screen max-w-sm mx-auto bg-slate-50 overflow-hidden">
+      <div className="flex flex-col h-screen max-w-sm mx-auto bg-slate-50 overflow-hidden" style={{ height: "100dvh" }}>
         {mainTab === "home"     && <HomeScreen     basic={basic} done={done} dontKnow={dontKnow} notDone={notDone} doneDynamic={doneDynamic} setDoneDynamic={setDoneDynamic} onAddVaccine={addVaccine} onRetake={() => startQuiz(true)} onMarkDone={markDone} onUnmarkDone={unmarkDone} plans={plans} onAddPlan={addPlan} onDeletePlan={deletePlan} onCompletePlan={completePlan} />}
         {mainTab === "city"     && <CityScreen     basic={basic} />}
         {mainTab === "donation" && <DonationScreen basic={basic} />}
