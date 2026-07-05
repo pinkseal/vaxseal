@@ -850,7 +850,7 @@ function WelcomeScreen({ onStart }) {
       <div className="max-w-sm w-full text-center">
         <div className="text-6xl mb-6">💉</div>
         <h1 className="text-3xl font-bold text-slate-900 mb-3">VaxPack</h1>
-        <p className="text-slate-500 mb-2">Переехал — разберись с прививками, чекапами и донорством.</p>
+        <p className="text-slate-500 mb-2">Переехал — разберись где и как сделать прививки.</p>
         <p className="text-slate-400 text-sm mb-10">5 минут, и ты знаешь что нужно сделать и куда идти.</p>
         <button onClick={onStart} className="w-full bg-teal-600 text-white font-semibold py-4 rounded-2xl hover:bg-teal-700 active:scale-95 transition-all shadow-lg shadow-teal-200">Начать →</button>
         <p className="text-xs text-slate-400 mt-4">Без регистрации. Данные остаются у тебя.</p>
@@ -865,7 +865,7 @@ function QuizBasic({ data, onChange, onNext }) {
     <div className="min-h-screen bg-white flex flex-col p-6 max-w-sm mx-auto pb-8">
       <ProgressBar step={1} total={4} />
       <h2 className="text-xl font-bold text-slate-900 mb-1">Немного о тебе</h2>
-      <p className="text-sm text-slate-500 mb-6">Чтобы подобрать нужные прививки и чекапы</p>
+      <p className="text-sm text-slate-500 mb-6">Чтобы подобрать нужные прививки </p>
       <div className="mb-5">
         <label className="block text-sm font-semibold text-slate-700 mb-2">Сколько тебе лет?</label>
         <input type="number" min={14} max={80} value={data.age} onChange={e => onChange({ ...data, age: e.target.value })} placeholder="Например, 32"
