@@ -1,3 +1,5 @@
+npm i @vercel/analytics
+import { Analytics } from "@vercel/analytics/next"
 import { useState, useEffect } from "react";
 
 // ─── STORAGE HELPER ──────────────────────────────────────────────────────────
@@ -1701,5 +1703,4 @@ export default function App() {
     );
   }
 }
-npm i @vercel/analytics
-import { Analytics } from "@vercel/analytics/next"
+
