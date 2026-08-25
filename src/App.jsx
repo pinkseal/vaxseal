@@ -1,6 +1,177 @@
 npm i @vercel/analytics
 import { Analytics } from "@vercel/analytics/next"
 import { useState, useEffect } from "react";
+// ─── I18N: Russian / Serbian (Latin) ─────────────────────────────────────────
+let CURRENT_LANG = "ru";
+
+const SR = {
+  "БЦЖ (туберкулёз)":"BCG (tuberkuloza)",
+  "АКДС / АДС-М":"DTaP / Td / Tdap",
+  "Столбняк, дифтерия, коклюш":"Tetanus, difterija, veliki kašalj",
+  "Корь / Краснуха / Паротит":"Male boginje / Rubela / Zauške",
+  "КПК — обычно 2 дозы в детстве":"MMR — obično 2 doze u detinjstvu",
+  "Гепатит B":"Hepatitis B", "Полиомиелит":"Poliomijelitis",
+  "Ветрянка":"Varičele", "Грипп":"Grip", "Любая вакцина":"Bilo koja vakcina",
+  "ВПЧ (рак шейки матки / HPV)":"HPV (humani papiloma virus)",
+  "Вирус папилломы человека":"Humani papiloma virus",
+  "Россия":"Rusija", "Беларусь":"Belorusija", "Украина":"Ukrajina", "Казахстан":"Kazahstan",
+  "Другая страна СНГ":"Druga zemlja ZND", "Сербия":"Srbija", "Черногория":"Crna Gora",
+  "Германия":"Nemačka", "Грузия":"Gruzija", "Армения":"Jermenija", "Другая страна":"Druga zemlja",
+  "Диабет":"Dijabetes", "Болезни сердца / гипертония":"Bolesti srca / hipertenzija",
+  "Астма / ХОБЛ":"Astma / HOBP", "Болезни щитовидной железы":"Bolesti štitne žlezde",
+  "Иммунодефицит / иммуносупрессия":"Imunodeficijencija / imunosupresija",
+  "Тяжёлые аллергии":"Teške alergije",
+  "Артериальное давление":"Krvni pritisak", "Раз в год":"Jednom godišnje",
+  "Общий анализ крови (ОАК)":"Kompletna krvna slika", "Глюкоза крови (сахар)":"Glukoza u krvi (šećer)",
+  "Липидный профиль (холестерин)":"Lipidni profil (holesterol)", "Стоматолог":"Stomatolog",
+  "ТТГ (щитовидная железа)":"TSH (štitna žlezda)", "АЛТ, АСТ (печёночные ферменты)":"ALT, AST (enzimi jetre)",
+  "ЭКГ":"EKG", "Зрение / внутриглазное давление":"Vid / očni pritisak",
+  "Анализ кала на скрытую кровь":"Test stolice na okultno krvarenje",
+  "Денситометрия (плотность костей)":"Denzitometrija (gustina kostiju)",
+  "Цитология шейки матки (Пап-тест)":"Citologija grlića materice (Papa test)",
+  "Гинеколог (плановый осмотр)":"Ginekolog (rutinski pregled)", "Маммография":"Mamografija",
+  "Ферритин и железо":"Feritin i gvožđe", "ПСА (простата)":"PSA (prostata)",
+  "Тестостерон общий":"Ukupni testosteron", "Гликированный гемоглобин (HbA1c)":"Glikozilirani hemoglobin (HbA1c)",
+  "Креатинин, СКФ (почки)":"Kreatinin, eGFR (bubrezi)", "ЭхоКГ (УЗИ сердца)":"Ehokardiografija (UZ srca)",
+  "Спирометрия (функция лёгких)":"Spirometrija (funkcija pluća)", "ТТГ + Т4 свободный":"TSH + slobodni T4",
+  "Гепатит B и C (антитела)":"Hepatitis B i C (antitela)",
+  "Нови Сад":"Novi Sad", "Белград":"Beograd",
+  "Государственный":"Državni", "Акция":"Akcija", "Бесплатно":"Besplatno",
+  "Прививки":"Vakcine", "Клиники":"Klinike", "Вакцинация":"Vakcinacija", "Город":"Grad",
+  "Донор":"Davanje krvi", "Профиль":"Profil", "Информация":"Informacije", "Центры":"Centri",
+  "Новости города":"Vesti iz grada", "Отзывы":"Utisci", "Возраст":"Godine", "Пол":"Pol",
+  "Женский":"Ženski", "Мужской":"Muški", "Откуда":"Odakle", "Хроники":"Hronične bolesti",
+  "Нет":"Ne", "Назад":"Nazad", "Дальше →":"Dalje →", "Начать →":"Počni →",
+  "Немного о тебе":"Nešto o tebi", "Чтобы подобрать нужные прививки":"Da bismo odabrali potrebne vakcine",
+  "Сколько тебе лет?":"Koliko imaš godina?", "Откуда приехал?":"Odakle dolaziš?", "Где живёшь?":"Gde živiš?",
+  "Пол":"Pol", "Женский 👩":"Ženski 👩", "Мужской 👨":"Muški 👨",
+  "Какие прививки помнишь?":"Kojih vakcina se sećaš?", "Нажми ℹ чтобы узнать подробнее":"Pritisni ℹ za više informacija",
+  "✓ Делал":"✓ Primio/la", "? Не уверен":"? Nisam siguran/na", "✕ Не делал":"✕ Nisam primio/la",
+  "Хронические заболевания?":"Hronične bolesti?",
+  "Это влияет на то, какие прививки нужны и есть ли ограничения":"Ovo utiče na potrebne vakcine i moguća ograničenja",
+  "Нет хронических заболеваний":"Nemam hronične bolesti", "💉 Влияние на вакцинацию":"💉 Uticaj na vakcinaciju",
+  "Посмотреть результат →":"Pogledaj rezultat →",
+  "Твоя картина здоровья:":"Tvoja slika zaštite:", "нужно":"potrebno", "обновить":"obnoviti", "проверить":"proveriti", "ок":"u redu",
+  "Срочные вакцины":"Hitna vakcinacija", "Укус собаки, порез о гвоздь, клещ и др.":"Ujed psa, povreda ekserom, krpelj i dr.",
+  "Запланировать вакцинацию":"Planiraj vakcinaciju", "Мои планы":"Moji planovi", "Нужно сделать":"Potrebno je primiti",
+  "Пора обновить":"Vreme je za revakcinaciju", "Проверить антитела":"Proveriti antitela", "Скорее всего ок":"Verovatno je u redu",
+  "✓ Сделано":"✓ Primljeno", "Сделал ✓":"Primio/la ✓", "Отменить":"Otkaži",
+  "С прививками всё отлично!":"Sa vakcinama je sve u redu!", "Можешь добавить свои прививки кнопкой ＋ выше.":"Možeš dodati svoje vakcine pomoću dugmeta ＋ iznad.",
+  "Что сказать в поликлинике":"Šta reći u domu zdravlja", "Готовые фразы на сербском":"Gotove fraze na srpskom",
+  "Ведём в Google Maps с правильным запросом — там актуальные часы и отзывы.":"Vodimo te na Google Maps sa odgovarajućom pretragom — tamo su aktuelno radno vreme i utisci.",
+  "🔍 Найти в Google Maps":"🔍 Pronađi na Google Maps",
+  "Что происходит с вакцинацией в городе":"Šta se dešava sa vakcinacijom u gradu",
+  "За последние 30 дней вакцинировались":"U poslednjih 30 dana vakcinisano je",
+  "человек в твоём городе · чаще всего:":"ljudi u tvom gradu · najčešće:",
+  "⚠️ Данные пока демонстрационные. В рабочей версии — реальная статистика, отзывы и городские новости.":"⚠️ Podaci su za sada demonstracioni. U radnoj verziji biće stvarna statistika, utisci i gradske vesti.",
+  "💬 Отзывы о клиниках":"💬 Utisci o klinikama", "📢 Новости и события":"📢 Vesti i događaji",
+  "Сделал прививку?":"Primio/la si vakcinu?", "Скоро здесь можно будет оставить свой отзыв и помочь другим выбрать клинику":"Uskoro će ovde biti moguće ostaviti utisak i pomoći drugima da izaberu kliniku",
+  "🩸 Донорство крови":"🩸 Davanje krvi", "Помоги другим и узнай свои показатели":"Pomozi drugima i saznaj svoje osnovne pokazatelje",
+  "✅ Требования":"✅ Uslovi", "🎁 Что ты получаешь":"🎁 Šta dobijaš", "🔄 Интервалы между сдачами":"🔄 Razmak između davanja krvi",
+  "⛔ Отводы":"⛔ Privremena/ trajna zabrana", "Прививки и донорство":"Vakcine i davanje krvi",
+  "Возьми с собой паспорт или личную карту (лична карта). Сдача крови полностью бесплатна.":"Ponesi pasoš ili ličnu kartu. Davanje krvi je potpuno besplatno.",
+  "🗺 Найти все центры на карте":"🗺 Pronađi sve centre na mapi",
+  "Личный кабинет":"Lični profil", "Иммунная защита":"Imunska zaštita", "Мои вакцинации и донорство":"Moje vakcinacije i davanja krvi",
+  "История прививок с датами и местами, записи о сдаче крови":"Istorija vakcina sa datumima i mestima, kao i evidencija davanja krvi",
+  "Обновить данные":"Ažuriraj podatke", "Пройти квиз заново — новые ответы дополнят историю, не сотрут":"Ponovi upitnik — novi odgovori dopuniće istoriju, ništa se neće obrisati",
+  "Мои данные":"Moji podaci", "🏙 Город проживания":"🏙 Grad stanovanja",
+  "Влияет на клиники, новости города и центры донорства":"Utiče na klinike, gradske vesti i centre za davanje krvi",
+  "🌍 Страна проживания":"🌍 Zemlja stanovanja", "Рекомендации ВОЗ":"Preporuke SZO", "Какие прививки нужны в этом регионе":"Koje vakcine su potrebne u ovom regionu",
+  "Достижения":"Dostignuća", "Переехал — защитился":"Preselio/la se — zaštitio/la se", "Прошёл квиз как эмигрант":"Završio/la upitnik kao doseljenik",
+  "Первый укол":"Prva vakcina", "Сделай первую прививку":"Primi prvu vakcinu", "Защита активирована":"Zaštita aktivirana",
+  "Сделай 3 прививки":"Primi 3 vakcine", "Иммунный герой":"Imunski heroj", "Закрой все красные позиции":"Reši sve crvene stavke",
+  "Добрый человек":"Dobra osoba", "Сдай кровь как донор":"Daj krv kao davalac", "Начать заново (удалит все данные)":"Počni iznova (obrisaće sve podatke)",
+  "Мои вакцинации и донорство":"Moje vakcinacije i davanja krvi", "Личная история с датами и местами":"Lična istorija sa datumima i mestima",
+  "💉 Сделанные прививки":"💉 Primljene vakcine", "Пока пусто. Добавь прививки кнопкой «＋ Добавить прививку» во вкладке «Вакцинация».":"Za sada nema zapisa. Dodaj vakcine pomoću dugmeta «＋ Dodaj vakcinu» na kartici «Vakcinacija».",
+  "🩸 Сдача крови":"🩸 Davanje krvi", "＋ Добавить":"＋ Dodaj", "Отмена":"Otkaži", "Когда сдавал?":"Kada si davao/la krv?",
+  "Где? (необязательно)":"Gde? (opciono)", "Центр переливания":"Centar za transfuziju", "Сохранить":"Sačuvaj",
+  "Записей о сдаче крови пока нет.":"Još nema zapisa o davanju krvi.", "Эта история хранится только у тебя. Удобно показать врачу или вспомнить, когда пора на ревакцинацию.":"Ova istorija se čuva samo kod tebe. Možeš je pokazati lekaru ili proveriti kada je vreme za revakcinaciju.",
+  "Переехал — разберись где и как сделать прививки.":"Preselio/la si se — saznaj gde i kako da primiš vakcine.",
+  "5 минут, и ты знаешь что нужно сделать и куда идти.":"Za 5 minuta znaćeš šta treba da uradiš i gde da odeš.",
+  "Без регистрации. Данные остаются у тебя.":"Bez registracije. Podaci ostaju kod tebe.",
+  "Добавить прививку":"Dodaj vakcinu", "Прививка":"Vakcina", "Донорство":"Davanje krvi",
+  "Какая прививка?":"Koja vakcina?", "Выбери...":"Izaberi...", "Дата":"Datum", "Время":"Vreme",
+  "Клиника / центр (необязательно)":"Klinika / centar (opciono)", "Запланировать 📅":"Planiraj 📅",
+  "🔔 Push-напоминания появятся в полной версии. Пока — кнопка «В календарь» на каждом плане.":"🔔 Push podsetnici će biti dostupni u punoj verziji. Za sada koristi dugme «U kalendar» na svakom planu.",
+  "Когда сделал? (необязательно)":"Kada si primio/la? (opciono)", "Название клиники":"Naziv klinike", "Добавить как сделанную ✓":"Dodaj kao primljenu ✓",
+  "О прививке":"O vakcini", "🗓 Когда ставят":"🗓 Kada se prima", "👤 Кому нужна":"👤 Kome je potrebna", "🔄 Ревакцинация":"🔄 Revakcinacija",
+  "💡 Важно знать":"💡 Važno je znati", "Понятно":"Razumem", "Приоритет":"Prioritet",
+  "Укусила собака или кошка":"Ujeo/la te je pas ili mačka", "Порезался / наступил на гвоздь":"Posekao/la si se / nagazio/la na ekser",
+  "Глубокая или грязная рана":"Duboka ili prljava rana", "Укусил клещ":"Ujeo te je krpelj", "Контакт с чужой кровью":"Kontakt sa tuđom krvlju",
+  "Срочная поездка в опасный регион":"Hitno putovanje u rizičan region", "Риск бешенства и столбняка":"Rizik od besnila i tetanusa",
+  "Риск столбняка":"Rizik od tetanusa", "Риск столбняка и инфекции":"Rizik od tetanusa i infekcije",
+  "Риск энцефалита и боррелиоза":"Rizik od encefalitisa i borelioze", "Риск гепатита B и ВИЧ":"Rizik od hepatitisa B i HIV-a",
+  "Тропические инфекции":"Tropske infekcije", "Что делать сейчас":"Šta uraditi sada", "💉 Нужные вакцины":"💉 Potrebne vakcine",
+  "📍 Куда обратиться в ${city}":"📍 Gde potražiti pomoć u ${city}", "🗺 Найти ближайший пункт":"🗺 Pronađi najbližu ustanovu",
+  "📞 Скорая помощь — 194":"📞 Hitna pomoć — 194", "🚨 Срочная вакцинация":"🚨 Hitna vakcinacija",
+  "Срочно":"Hitno", "Что случилось?":"Šta se dogodilo?", "✓ копировано":"✓ kopirano", "копировать":"kopiraj",
+  "Фразы на сербском":"Fraze na srpskom", "Полезно знать":"Korisno je znati",
+  "Записаться и прийти":"Zakazivanje i dolazak", "Объяснить что нужно":"Objasniti šta ti treba", "Важные вопросы":"Važna pitanja", "Если что-то срочное":"Ako je hitno",
+  "Вакцинация — всё подряд":"Vakcinacija — sve opcije", "Общий поиск мест для прививок":"Opšta pretraga mesta za vakcinaciju",
+  "Дом здравља (гос. поликлиника)":"Dom zdravlja (državna ambulanta)", "Бесплатно по LBO / матичном броју":"Besplatno uz LBO / matični broj",
+  "Частные клиники":"Privatne klinike", "Без LBO, быстрее, платно":"Bez LBO, brže, uz plaćanje",
+  "Аптеки (грипп, COVID)":"Apoteke (grip, COVID)", "Без записи, сезонные прививки":"Bez zakazivanja, sezonske vakcine",
+  "ВПЧ-вакцина":"HPV vakcina", "Гинеколог или частная клиника":"Ginekolog ili privatna klinika",
+  "Путевые прививки":"Putne vakcine", "Жёлтая лихорадка, тиф и др.":"Žuta groznica, tifus i dr.",
+  "Где найти чай":"Gde pronaći čaj"
+};
+
+function t(value) {
+  if (typeof value !== "string" || CURRENT_LANG === "ru") return value;
+  // Preserve template substitutions and translate exact strings first.
+  if (SR[value]) return SR[value];
+  let out = value;
+  Object.keys(SR).sort((a,b)=>b.length-a.length).forEach(k => { if (out.includes(k)) out = out.split(k).join(SR[k]); });
+  return out;
+}
+
+function setLanguage(lang) {
+  CURRENT_LANG = lang;
+  try { localStorage.setItem("vaxpack-language", lang); } catch(e) {}
+  window.dispatchEvent(new CustomEvent("vaxpack-language-change", { detail: lang }));
+  // The existing artifact uses many inline strings. Reloading guarantees every
+  // screen and data object is rendered in the selected language consistently.
+  window.location.reload();
+}
+
+try { CURRENT_LANG = localStorage.getItem("vaxpack-language") || "ru"; } catch(e) {}
+
+function LanguageToggle() {
+  const [lang, setLang] = useState(CURRENT_LANG);
+  useEffect(() => {
+    const handler = e => setLang(e.detail);
+    window.addEventListener("vaxpack-language-change", handler);
+    return () => window.removeEventListener("vaxpack-language-change", handler);
+  }, []);
+  return <div className="fixed top-3 right-3 z-[100] flex rounded-xl bg-white/95 backdrop-blur border border-slate-200 shadow-sm p-0.5 text-xs font-bold">
+    <button onClick={() => setLanguage("ru")} className={`px-2.5 py-1.5 rounded-lg transition-all ${lang === "ru" ? "bg-slate-900 text-white" : "text-slate-500"}`}>🇷🇺 RU</button>
+    <button onClick={() => setLanguage("sr")} className={`px-2.5 py-1.5 rounded-lg transition-all ${lang === "sr" ? "bg-teal-600 text-white" : "text-slate-500"}`}>🇷🇸 SR</button>
+  </div>;
+}
+
+
+
+
+function installTranslationObserver() {
+  if (CURRENT_LANG === "ru" || typeof window === "undefined") return;
+  const translateNode = node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const v = node.nodeValue; const nv = t(v);
+      if (nv !== v) node.nodeValue = nv;
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+    for (const attr of ["placeholder", "title", "aria-label"]) {
+      if (node.hasAttribute(attr)) { const v=node.getAttribute(attr); const nv=t(v); if(nv!==v) node.setAttribute(attr,nv); }
+    }
+    node.childNodes.forEach(translateNode);
+  };
+  const run = () => { if (document.body) translateNode(document.body); };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, {once:true}); else run();
+  const obs = new MutationObserver(muts => muts.forEach(m => m.addedNodes.forEach(translateNode)));
+  if (document.body) obs.observe(document.body,{childList:true,subtree:true});
+}
+installTranslationObserver();
 
 // ─── STORAGE HELPER ──────────────────────────────────────────────────────────
 // Uses window.storage (Claude artifact environment) when available,
@@ -1646,19 +1817,19 @@ export default function App() {
   }
 
   // ── Onboarding flow ──
-  if (screen === "welcome")  return <WelcomeScreen onStart={() => setScreen("basic")} />;
-  if (screen === "basic")    return <QuizBasic data={basic} onChange={setBasic} onNext={() => { setQuizDone([]); setQuizDk([]); setQuizNot([]); setScreen("vaccines_quiz"); }} />;
+  if (screen === "welcome")  return <><LanguageToggle /><WelcomeScreen onStart={() => setScreen("basic")} /></>;
+  if (screen === "basic")    return <><LanguageToggle /><QuizBasic data={basic} onChange={setBasic} onNext={() => { setQuizDone([]); setQuizDk([]); setQuizNot([]); setScreen("vaccines_quiz"); }} /></>;
 
   // ── Vaccine quiz (used for both first-time and retake) ──
   if (screen === "vaccines_quiz") return (
-    <QuizVaccines done={quizDone} dontKnow={quizDk} notDone={quizNot}
+    <><LanguageToggle /><QuizVaccines done={quizDone} dontKnow={quizDk} notDone={quizNot}
       onChange={{ setDone:setQuizDone, setDk:setQuizDk, setNot:setQuizNot }}
       onNext={() => isRetake ? finishQuiz() : setScreen("chronic")}
-      onBack={() => isRetake ? (setScreen("result"), setIsRetake(false)) : setScreen("basic")} />
+      onBack={() => isRetake ? (setScreen("result"), setIsRetake(false)) : setScreen("basic")} /></>
   );
 
   if (screen === "chronic") return (
-    <QuizChronic data={basic.chronic} onChange={(c) => setBasic({ ...basic, chronic: c })}
+    <><LanguageToggle /><QuizChronic data={basic.chronic} onChange={(c) => setBasic({ ...basic, chronic: c })}
       onNext={() => {
         const md = Array.from(new Set([...done, ...quizDone]));
         const mk = Array.from(new Set([...dontKnow, ...quizDk])).filter(id => !md.includes(id));
@@ -1667,7 +1838,7 @@ export default function App() {
         syncRecordsFromDone(md);
         setScreen("result"); setMainTab("home");
       }}
-      onBack={() => setScreen("vaccines_quiz")} />
+      onBack={() => setScreen("vaccines_quiz")} /></>
   );
 
   // ── Main app with bottom nav ──
@@ -1675,12 +1846,13 @@ export default function App() {
     if (showRecords) {
       return (
         <div className="flex flex-col h-screen max-w-sm mx-auto bg-slate-50 overflow-hidden" style={{ height: "100dvh" }}>
-          <RecordsScreen vaxRecords={vaxRecords} donationRecords={donationRecords} onAddDonation={addDonation} onSetDate={setRecordDate} onBack={() => setShowRecords(false)} />
+          <LanguageToggle /><RecordsScreen vaxRecords={vaxRecords} donationRecords={donationRecords} onAddDonation={addDonation} onSetDate={setRecordDate} onBack={() => setShowRecords(false)} />
         </div>
       );
     }
     return (
       <div className="flex flex-col h-screen max-w-sm mx-auto bg-slate-50 overflow-hidden" style={{ height: "100dvh" }}>
+        <LanguageToggle />
         {mainTab === "home"     && <HomeScreen     basic={basic} done={done} dontKnow={dontKnow} notDone={notDone} doneDynamic={doneDynamic} setDoneDynamic={setDoneDynamic} onAddVaccine={addVaccine} onRetake={() => startQuiz(true)} onMarkDone={markDone} onUnmarkDone={unmarkDone} plans={plans} onAddPlan={addPlan} onDeletePlan={deletePlan} onCompletePlan={completePlan} />}
         {mainTab === "city"     && <CityScreen     basic={basic} />}
         {mainTab === "donation" && <DonationScreen basic={basic} />}
@@ -1703,4 +1875,3 @@ export default function App() {
     );
   }
 }
-
