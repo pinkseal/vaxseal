@@ -1,4 +1,4 @@
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 import { useState, useEffect, useContext, createContext } from "react";
 
 // ─── STORAGE HELPER ──────────────────────────────────────────────────────────
@@ -2366,6 +2366,7 @@ export default function App() {
 
   return (
     <LangContext.Provider value={langCtx}>
+      <Analytics />
       {(() => {
         // ── Onboarding flow ──
         if (screen === "welcome")  return <WelcomeScreen onStart={() => setScreen("basic")} />;
