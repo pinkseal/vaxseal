@@ -1,3 +1,4 @@
+npm i @vercel/analytics
 import { Analytics } from "@vercel/analytics/react"
 import { useState, useEffect, useContext, createContext } from "react";
 
@@ -1548,9 +1549,8 @@ function WelcomeScreen({ onStart }) {
 
 function QuizBasic({ data, onChange, onNext }) {
   const { t, lang } = useLang();
-  const ORIGINS = originsData(lang);
   const CITY_SEARCH = citySearchData(lang);
-  const valid = data.age && data.origin && data.city && data.gender;
+  const valid = data.age && data.city && data.gender;
   return (
     <div className="min-h-screen bg-white flex flex-col p-6 max-w-sm mx-auto pb-8">
       <div className="flex justify-end mb-2"><LangToggle /></div>
@@ -1568,15 +1568,6 @@ function QuizBasic({ data, onChange, onNext }) {
           {[["female",t.female],["male",t.male]].map(([v,l]) => (
             <button key={v} onClick={() => onChange({ ...data, gender: v })}
               className={`flex-1 py-3 rounded-xl border text-sm font-medium transition-all ${data.gender === v ? "border-teal-500 bg-teal-50 text-teal-800" : "border-slate-200 text-slate-700"}`}>{l}</button>
-          ))}
-        </div>
-      </div>
-      <div className="mb-5">
-        <label className="block text-sm font-semibold text-slate-700 mb-2">{t.originLabel}</label>
-        <div className="flex flex-col gap-2">
-          {ORIGINS.map(o => (
-            <button key={o} onClick={() => onChange({ ...data, origin: o })}
-              className={`text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all ${data.origin === o ? "border-teal-500 bg-teal-50 text-teal-800" : "border-slate-200 text-slate-700"}`}>{o}</button>
           ))}
         </div>
       </div>
@@ -2017,7 +2008,6 @@ function ProfileScreen({ basic, onChange, done, dontKnow, notDone, doneDynamic, 
           {[
             {label:t.fAge,value:`${age} ${t.yearsOld}`},
             {label:t.fGender,value:basic.gender==="female"?t.female.split(" ")[0]:t.male.split(" ")[0]},
-            {label:t.fOrigin,value:basic.origin||"—"},
             {label:t.fChronic,value:chronics.length>0?chronics.join(", "):t.none},
           ].map(row => (
             <div key={row.label} className="flex justify-between items-center text-sm py-1.5 border-b border-slate-50 last:border-0">
